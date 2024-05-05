@@ -1,0 +1,410 @@
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Mona.</title>
+	<style>
+	
+	/* Reset default link styles */
+a {
+  color: inherit; /* Inherit text color from parent */
+  text-decoration: none; /* Remove underline by default */
+  cursor: pointer; /* Change cursor to pointer */
+}
+
+/* Set hover effect */
+a:hover {
+  text-decoration: none; /* Underline on hover */
+}
+
+		#mySvg {
+		max-height: 96%; 
+		max-width: 96%;
+
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		transition: max-height 0.5s ease,max-width 0.5s ease, background 1s ease; 
+		}
+		#mySvg path{
+		transition: scale 1s ease;
+		}
+
+	#bgImage{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			max-height: 96%; 
+			max-width: 96%;
+			border-radius: 10px; 
+			z-index: -2; 
+			filter : grayscale(100%) blur(16px);
+			opacity:0;
+			transition: max-height 0.66s ease,max-width 0.66s ease, background 1s ease,filter 2.66s ease,opacity 1s ease,transform 0.11s ease; 
+
+	}
+
+	#bgImageB{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			max-height: 96%; 
+			max-width: 96%;
+			border-radius: 10px; 
+			z-index: -1; 
+			filter : grayscale(100%) blur(16px);
+			opacity:.66;
+			transition: max-height 1.33s ease,max-width 1.33s ease, background 1s ease,filter 1s ease,opacity 1s ease,transform 0.11s ease; 
+
+	}
+		#bgImage::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			border-radius: inherit;
+			background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+		}
+		
+		 body, html {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			background:transparent;
+				transition: max-height 0.5s ease, background 1.5s ease; 
+
+		}
+
+		#container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100%;
+			
+			
+			
+	}
+@font-face {
+    font-family: customFont;
+    src: url('c3ddb99244adbafbc39209439dad58c8.ttf') format('truetype');
+}	
+	.nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+
+    text-align: left;
+	z-index:+2;
+	
+}
+
+.nav-item {
+font-family:customFont, sans-serif; 
+    font-size: 1.382vw; /* Adjust as needed */
+	line-height: 1.382vw;
+    margin-bottom: 0; /* Adjust as needed */
+	
+	  opacity: 0;
+  transform: scale(0.618);
+  transition: opacity 0.5s ease, transform 0.5s ease, padding .5s ease, filter .33s ease;
+  text-align:left:
+}
+
+.nav-item.active {
+  transform: scale(1);
+  opacity:0.24;
+}
+.nav-item.active:hover {
+
+opacity:0.9;
+}
+.nav-item a{
+display:block;
+padding:1vw 1vw;
+}
+	</style>
+	</head>
+	<body id="bodyID">
+	<div id="container">
+	<svg id="mySvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1449 2159">
+	   
+	</svg>
+	<img id="bgImage" src="5928.jpg" />
+	<img id="bgImageB" src="1449px-Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg" />
+	
+	<div class="nav" id="myNav">
+    <div class="nav-item"><a href="#">Mona Lisa?</a></div>
+    <div class="nav-item"><a href="#">About</a></div>
+    <div class="nav-item"><a href="#">Portfolio</a></div>
+	 <div class="nav-item"><a href="#">Events</a></div>
+</div>
+
+	</div>
+<script>
+
+
+// Function to position the navigation element
+    function positionNav() {
+        var imageRect = bgImage.getBoundingClientRect(); // Get the position of the image relative to the viewport
+        
+        // Calculate the position of the navigation element
+        var navRight = imageRect.right + 42; // Distance between the image and the right edge of the viewport
+        
+        // Set the position of the navigation element
+        myNav.style.left = navRight + 'px';
+    }
+
+
+window.addEventListener('load', function() {
+    // Get references to the image and navigation elements
+    const bgImage = document.getElementById('bgImage');
+    const myNav = document.getElementById('myNav');
+    
+    
+    
+    // Call the positionNav function when the page is loaded and resized
+    positionNav();
+    window.addEventListener('resize', positionNav);
+});
+
+// Function to load SVG file dynamically
+function loadSvg(url, callback) {
+    fetch(url)
+        .then(response => response.text())
+        .then(svgData => {
+            const svgContent = svgData.replace(/<head>[\s\S]*<\/head>/, '');
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+            const paths = svgDoc.querySelectorAll('path');
+            animatePaths(paths, () => {
+                // Call the background transition function after all paths are shown
+                transitionBackground();
+            });
+            if (callback) {
+                callback();
+            }
+        });
+}
+
+function mapRange(value, minInput, maxInput, minOutput, maxOutput) {
+    return minOutput + (maxOutput - minOutput) * ((value - minInput) / (maxInput - minInput));
+}
+function findMaxPathLength(paths) {
+        let maxLength = 0;
+
+        paths.forEach(path => {
+            const length = path.getTotalLength();
+            if (length > maxLength) {
+                maxLength = length;
+            }
+        });
+
+        return maxLength;
+    }
+
+    
+
+// Function to animate paths randomly
+function animatePaths(paths, callback) {
+    // Shuffle the array of paths
+    const shuffledPaths = Array.from(paths).sort(() => Math.random() - 0.5);
+
+    // Animate each path
+    shuffledPaths.forEach((path, index) => {
+        const length = path.getTotalLength();
+        
+        // Style path
+        path.style.fill = 'none';
+        path.style.stroke = '#fafafa';
+        path.style.strokeWidth = '1';
+        path.style.transition = 'stroke-dashoffset .54s ease-in-out';
+        path.style.strokeDasharray = length;
+        path.style.strokeDashoffset = length;
+        document.getElementById('mySvg').appendChild(path);
+        
+        // Animate path
+        setTimeout(() => {
+            path.getBoundingClientRect(); // Force reflow
+            path.style.strokeDashoffset = '0';
+
+            // Check if this is the last path
+            if (index === shuffledPaths.length - 3 && callback) {
+                // Call the callback function after the last path is shown
+                callback();
+            }
+			
+        }, index * 	mapRange(length, 1, 18000, .33, .66)); // Adjust timing as needed
+    });
+}
+
+
+const navItems = document.querySelectorAll('.nav-item');
+
+function animateNavItems() {
+  navItems.forEach((item, index) => {
+    setTimeout(() => {
+      item.classList.add('active');
+    }, index * 300); // Adjust the delay time as needed
+  });
+}
+
+
+// Function to transition background to white and stroke to black
+function transitionBackground() {
+const svg = document.getElementById('mySvg');
+const imag = document.getElementById('bgImage');
+const imagB = document.getElementById('bgImageB');
+const bodi = document.getElementById('bodyID');
+    svg.style.background = 'transparent';
+    bodi.style.background = 'transparent';
+	
+	imag.style.maxHeight  = '82%';
+	imag.style.maxWidth = '82%';
+
+	imagB.style.maxHeight  = '82%';
+	imagB.style.maxWidth = '82%';
+	
+	svg.style.maxHeight  = '82%';
+	svg.style.maxWidth = '82%';
+	
+// Add event listener for mousemove event on the document
+document.addEventListener('mousemove', function(event) {
+    // Calculate the distance from the center of the viewport to the cursor
+    const viewportCenterX = window.innerWidth / 2;
+    const viewportCenterY = window.innerHeight / 2;
+    const distanceX = event.clientX - viewportCenterX;
+    const distanceY = event.clientY - viewportCenterY;
+
+    // Limit the maximum range of movement
+    const maxRange = 12; // Adjust as needed
+
+    // Calculate the translation values
+    const translateX = mapRange(distanceX,-900,900,-maxRange,maxRange)
+    const translateY = mapRange(distanceY,-600,600,-maxRange,maxRange)
+
+    // Apply the translation
+    imagB.style.transform = `translate(calc(-50% + ${-translateX}px), calc(-50% + ${-translateY}px))`;
+	imagB.style.opacity = ` ${.66 -(translateX+translateY)/140}`;
+	imagB.style.filter = `grayscale(100%) blur(${6 +(translateX-translateY)/3}px)`;
+	
+	var facScale = mapRange((Math.abs(translateX)+Math.abs(translateY))/6,0,4,0-.33,1.33);
+	imag.style.maxHeight  = `${82 + facScale}%`;
+	imag.style.maxWidth = `${82 + facScale}%`;
+	
+	//positionNav();
+	
+	
+	
+});
+imag.style.filter = 'grayscale(100%) blur(0px)';
+setTimeout(() => {
+		imag.style.opacity = '1';
+        }, 400);
+
+setTimeout(() => {
+		   animateNavItems();
+        }, 400);
+
+
+   
+const paths = svg.querySelectorAll('path');
+/*
+      // Add event listener for mousemove event
+    svg.addEventListener('mousemove', function(event) {
+        // Get cursor position relative to the SVG element
+        const svgRect = svg.getBoundingClientRect();
+        const mouseX = event.clientX - svgRect.left;
+        const mouseY = event.clientY - svgRect.top;
+
+        // Define the maximum distance for zoom effect
+        const maxDistance = 420; // Adjust as needed
+        // Define the maximum number of paths to be affected
+        const maxPathsAffected = 42; // Adjust as needed
+
+        // Array to store distances for eligible paths
+        const distances = [];
+
+        // Iterate through each path and calculate distance to cursor
+        paths.forEach(path => {
+            const pathRect = path.getBoundingClientRect();
+            const pathX = pathRect.left + pathRect.width / 2 - svgRect.left;
+            const pathY = pathRect.top + pathRect.height / 2 - svgRect.top;
+            const distance = Math.sqrt((mouseX - pathX) ** 2 + (mouseY - pathY) ** 2);
+
+            const pathPoints = path.getAttribute('d').split(/[a-zA-Z\s,]+/).filter(Boolean);
+            if (pathPoints.length < 96) {
+                distances.push({ path, distance });
+            }
+        });
+
+        // Sort eligible paths by distance (closest first)
+        distances.sort((a, b) => a.distance - b.distance);
+
+        // Apply zoom effect to the closest eligible paths, up to maxPathsAffected
+        for (let i = 0; i < Math.min(maxPathsAffected, distances.length); i++) {
+            const { path, distance } = distances[i];
+            if (distance < maxDistance) {
+                const scaleFactor = 1 + (maxDistance - distance) / maxDistance * 0.1; // Adjust zoom factor
+                path.style.transform = `scale(${scaleFactor})`;
+				path.style.transition = 'scale 1s';
+            } else {
+                path.style.transform = 'scale(1)'; // Reset scale if not within proximity
+				path.style.transition = 'scale 1s';
+            }
+        }
+
+        // Reset scale for paths beyond maxPathsAffected
+        for (let i = maxPathsAffected; i < distances.length; i++) {
+            const { path } = distances[i];
+            path.style.transform = 'scale(1)';
+			path.style.transition = 'scale 1s';
+        }
+    });
+	
+*/	
+	
+}
+
+// Load SVG file and animate paths
+loadSvg('mona.html', () => {
+    console.log('SVG loaded and paths animated.');
+});
+
+
+
+// Get all navigation items
+
+// Add event listeners to each navigation item
+navItems.forEach(navItem => {
+    navItem.addEventListener('mouseover', function() {
+        // Set half opacity for all navigation items except the hovered one
+        navItems.forEach(item => {
+            if (item !== navItem) {
+                item.style.opacity = '0.33';
+				item.style.filter = 'blur(3px)';
+            }
+        });
+    });
+
+    navItem.addEventListener('mouseout', function() {
+        // Restore full opacity for all navigation items when mouse leaves
+        navItems.forEach(item => {
+            item.style.opacity = '.66';
+			item.style.filter = 'blur(0px)';
+        });
+    });
+});
+
+	
+	
+
+</script>
+
+</body>
+</html>
