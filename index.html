@@ -76,7 +76,6 @@ a:hover {
 			margin: 0;
 			padding: 0;
 			height: 100%;
-		
 				transition: max-height 0.5s ease, background 1.5s ease; 
 
 		}
@@ -129,16 +128,32 @@ display:block;
 padding:1vw 1vw;
 }
 
-		#bodyID{
+#bodyID{
 			background:#0a0a0a;
 
-z-index=-6;
+z-index=-7;
 }
 
-		
+#bodybidy {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('Artboard Mona Lisa.png');
+	background-position: -10px -10px;
+	    background-size: 66%;
+    background-repeat: repeat;
+    opacity: 0;
+    transition: opacity 0.5s ease, background-position 0.5s ease;z-index=-5;
+}
+
+
 	</style>
 	</head>
 	<body id="bodyID">
+	<div id="bodybidy"></div>
+	
 	<div id="container">
 	<svg id="mySvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1449 2159">
 	   
@@ -147,7 +162,7 @@ z-index=-6;
 	<img id="bgImageB" src="1449px-Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg" />
 	
 	<div class="nav" id="myNav">
-    <div class="nav-item"><a href="#">Mona Lisa?</a></div>
+    <div class="nav-item"><a href="#" id="Mona" >Mona Lisa?</a></div>
     <div class="nav-item"><a href="#">About</a></div>
     <div class="nav-item"><a href="#">Portfolio</a></div>
 	 <div class="nav-item"><a href="#">Events</a></div>
@@ -157,6 +172,7 @@ z-index=-6;
 <script>
 
 
+let startmovebg = 0;
 // Function to position the navigation element
     function positionNav() {
         var imageRect = bgImage.getBoundingClientRect(); // Get the position of the image relative to the viewport
@@ -167,7 +183,6 @@ z-index=-6;
         // Set the position of the navigation element
         myNav.style.left = navRight + 'px';
     }
-
 
 window.addEventListener('load', function() {
     // Get references to the image and navigation elements
@@ -216,7 +231,10 @@ function findMaxPathLength(paths) {
         return maxLength;
     }
 
-    
+  const svg = document.getElementById('mySvg');
+const imag = document.getElementById('bgImage');
+const imagB = document.getElementById('bgImageB');
+const bodi = document.getElementById('bodyID');  
 
 // Function to animate paths randomly
 function animatePaths(paths, callback) {
@@ -241,12 +259,17 @@ function animatePaths(paths, callback) {
             path.getBoundingClientRect(); // Force reflow
             path.style.strokeDashoffset = '0';
 
+
+
+
             // Check if this is the last path
-            if (index === shuffledPaths.length - 3 && callback) {
+            if (index === shuffledPaths.length - 1 && callback) {
                 // Call the callback function after the last path is shown
                 callback();
             }
-			
+				
+	
+	
         }, index * 	mapRange(length, 1, 18000, .33, .66)); // Adjust timing as needed
     });
 }
@@ -265,10 +288,7 @@ function animateNavItems() {
 
 // Function to transition background to white and stroke to black
 function transitionBackground() {
-const svg = document.getElementById('mySvg');
-const imag = document.getElementById('bgImage');
-const imagB = document.getElementById('bgImageB');
-const bodi = document.getElementById('bodyID');
+
     svg.style.background = 'transparent';
     bodi.style.background = '#fafafa';
 	
@@ -290,16 +310,16 @@ document.addEventListener('mousemove', function(event) {
     const distanceY = event.clientY - viewportCenterY;
 
     // Limit the maximum range of movement
-    const maxRange = 12; // Adjust as needed
+    const maxRange = 9; // Adjust as needed
 
     // Calculate the translation values
     const translateX = mapRange(distanceX,-900,900,-maxRange,maxRange)
     const translateY = mapRange(distanceY,-600,600,-maxRange,maxRange)
-
+	imagB.style.transition = "max-height 1.33s ease,max-width 1.33s ease, background 1s ease,filter 0.11 ease,opacity 1s ease,transform 0.11s ease"
     // Apply the translation
     imagB.style.transform = `translate(calc(-50% + ${-translateX}px), calc(-50% + ${-translateY}px))`;
 	imagB.style.opacity = ` ${.66 -(translateX+translateY)/140}`;
-	imagB.style.filter = `grayscale(100%) blur(${6 +(translateX-translateY)/3}px)`;
+	imagB.style.filter = `grayscale(100%) blur(${(Math.abs(translateX))/2}px)`;
 	
 	var facScale = mapRange((Math.abs(translateX)+Math.abs(translateY))/6,0,4,0-.33,1.33);
 	imag.style.maxHeight  = `${82 + facScale}%`;
@@ -312,12 +332,12 @@ document.addEventListener('mousemove', function(event) {
 });
 imag.style.filter = 'grayscale(100%) blur(0px)';
 setTimeout(() => {
-	
 		imag.style.opacity = '1';
         }, 400);
 
 setTimeout(() => {
 		   animateNavItems();
+		   startmovebg = 1;
         }, 400);
 
 
@@ -378,10 +398,36 @@ const paths = svg.querySelectorAll('path');
 	
 */	
 	
+	
+		
+document.getElementById("Mona").addEventListener("mouseover", function() {
+    intervalId = setInterval(moveBackground, 69); // Adjust the interval as needed
+
+    function moveBackground() {
+        var bodybidy = document.getElementById("bodybidy");
+        if (startmovebg === 1) {
+            bodybidy.style.opacity = "0.03";
+        }
+        var currentPosition = bodybidy.style.backgroundPosition.split(' ');
+        var newX = parseInt(currentPosition[0]) - 1; // Adjust the movement speed as needed
+        var newY = parseInt(currentPosition[1]) - 1; // Adjust the movement speed as needed
+        bodybidy.style.backgroundPosition = newX + "px " + newY + "px";
+
+    }
+});
+
+document.getElementById("Mona").addEventListener("mouseout", function() {
+    clearInterval(intervalId);
+    var bodybidy = document.getElementById("bodybidy");
+    bodybidy.style.opacity = "0";
+    bodybidy.style.backgroundPosition = "0 0";
+});
+
+
 }
 
 // Load SVG file and animate paths
-loadSvg('mona.html', () => {
+loadSvg('https://ivory-teri-83.tiiny.site/', () => {
     console.log('SVG loaded and paths animated.');
 });
 
@@ -410,8 +456,9 @@ navItems.forEach(navItem => {
     });
 });
 
-	
-	
+
+
+
 
 </script>
 
